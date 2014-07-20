@@ -1,88 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>2048</title>
     <meta charset="utf-8" />
-    <style>
-        #dropBox {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            border: 1px solid grey;
-            z-index: 1;
-        }
-        #output {
-            border: 1px solid grey;
-        }
-        #div1 {
-            width: 100px;
-            height: 100px;
-            border: 1px solid grey;
-            position: absolute;
-            /*top: 0;*/
-            /*left: 0;*/
-            z-index: 1000;
-        }
-    </style>
 </head>
 <body>
-<div id="dropBox">
-    <!--<canvas id="canvas"></canvas>-->
-</div>
-<canvas id="output" width="300" height="300"></canvas>
-
-<script>
-    var dropBox = document.getElementById("dropBox");
-    function handleEvent(evt) {
-        evt.preventDefault();
-        var reader = new FileReader();
-        if (evt.type == "dragenter") {
-            dropBox.innerHTML = "快点碗里来";
-        }
-        if (evt.type == "drop") {
-            var files = evt.dataTransfer.files;
-
-            reader.readAsDataURL(files[0]);
-            reader.onload = function () {
-                dropBox.innerHTML = "<img id='img' width='300' height='300' src='" + reader.result + "' />";
-                var div = document.createElement("div");
-                dropBox.appendChild(div);
-                div.id = "div1";
-                div.style.left = "0";
-
-                div.style.top = "0";
-                document.getElementById("div1").onmousedown = function (evt) {
-                    var target = evt.target;
-                    var point = {"x": evt.clientX, "y": evt.clientY};
-                    document.onmousemove = function (e) {
-                        target.style.left = e.clientX - point.x + "px";
-                        target.style.top = e.clientY - point.y + "px";
-                        cut(e.clientX - point.x, e.clientY - point.y);
-                    };
-                    document.onmouseup = function () {
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                    }
-                }
-
-
-            }
-
-            document.getElementById("output").innerHTML = info;
-        }
-    }
-    dropBox.ondragenter = handleEvent;
-    dropBox.ondragover = handleEvent;
-    dropBox.ondrop = handleEvent;
-
-    function cut(x, y) {
-        var canvas = document.getElementById("output");
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        var img = document.getElementById("img");
-        var scaleX = img.width / img.naturalWidth;
-        var scaleY = img.height / img.naturalHeight;
-        ctx.drawImage(img, x / scaleX, y / scaleY, 100 / scaleX, 100 / scaleY, 0, 0, 300, 300);
-    }
-</script>
+    <canvas id="canvas" width="300" height="300" style="background-color: grey"></canvas>
+    <script src="game.js"></script>
 </body>
 </html>
