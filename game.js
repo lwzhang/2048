@@ -134,7 +134,28 @@ p.plusSameNum = function () {
 };
 
 p.move = function () {
-    
+	for (var x = 0; x < 4; x++) {
+		for (var y = 3; y >= 0; y--) {
+			if (this.getPos(x, y) && y < 3) {
+				for (var z = y + 1; z < 4; z++) {
+					if (this.getPos(x, z)) {
+
+					}
+				}
+			}
+		}
+	}
+};
+
+p.getPos = function (x, y) {
+	for (var i = 0; i < this.numNodes.length; i++) {
+		var posX = this.numNodes[i].x;
+		var posY = this.numNodes[i].y;
+		if (posX === x && posY === y) {
+			return this.numNodes[i];
+		}
+	}
+	return false;
 };
 
 p.getNum = function (x, y) {
@@ -146,7 +167,7 @@ p.getNum = function (x, y) {
         }
     }
     return false;
-}
+};
 
 var game = new Game(document.querySelector("canvas"));
 game.init();
