@@ -6,7 +6,6 @@ var Game = function (canvas) {
     this.radius = this.width / 8;
 
     this.numNodes = [];
-    this.position = {x: [], y: []};
 };
 
 var p = Game.prototype;
@@ -18,7 +17,6 @@ p.init = function () {
 };
 
 p.createGrid = function () {
-    var canvas = this.canvas;
     var ctx = this.ctx;
     var radius = this.radius;
     var x, y;
@@ -28,7 +26,7 @@ p.createGrid = function () {
             y = (j * 2 + 1) * radius;
             ctx.lineWidth = 5;
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.stroke();
             ctx.closePath();
         }
@@ -36,23 +34,30 @@ p.createGrid = function () {
 };
 
 p.createCircle = function () {
-    var ctx = this.ctx;
     for (var i = 0; i < 2; i++) {
-        var flag = true;
-        while (flag) {
-            var x = parseInt(4 * Math.random());
-            var y = parseInt(4 * Math.random());
-            if (this.compare(x, y)) {
-                flag = false;
-            }
-        }
-        var num = 2;
+        var obj = this.getAvailablePos();
+        var x = obj.x, y = obj.y;
+        var num = this.randomNum();
         this.numNodes.push({x: x, y: y, num: num});
-        this.position.x.push(x);
-        this.position.y.push(y);
         this.createBg(x, y);
         this.createNum(x, y, num);
     }
+};
+
+p.getAvailablePos = function () {
+    var flag = true;
+    while (flag) {
+        var x = parseInt(4 * Math.random());
+        var y = parseInt(4 * Math.random());
+        if (this.compare(x, y)) {
+            flag = false;
+        }
+    }
+    return {x: x, y: y};
+};
+
+p.randomNum = function () {
+    return Math.random() > 0.9 ? 4 : 2;
 };
 
 p.createBg = function (x, y) {
@@ -95,67 +100,156 @@ p.go = function () {
         var code = e.keyCode || e.charCode;
         switch (code) {
             case 37:
+                that.left();
+                that.reDraw();
+                that.addNum();
                 break;
             case 38:
+                that.up();
+                that.reDraw();
+                that.addNum();
                 break;
             case 39:
+                that.right();
+                that.reDraw();
+                that.addNum();
                 break;
             case 40:
-
+                that.down();
+                that.reDraw();
+                that.addNum();
                 break;
         }
     }
 };
 
-//p.getFarthestPos = function (x) {
-    //for (var i = 0; i < 4; i++) {
-        // for (var j = 3; j >= 0; j--) {
-            // if (i == x) {
-                // if (this.getNum(i, j)) {
-                    // return this.getNum(i, j).y;
-                // }
-            // }
-        // }
-    // }
-// }
+p.addNum = function () {
+    var obj = this.getAvailablePos();
+    var x = obj.x, y = obj.y;
+    var num = this.randomNum();
+    this.numNodes.push({x: x, y: y, num: num});
+    this.createBg(x, y);
+    this.createNum(x, y, num);
+};
 
-p.plusSameNum = function () {
+p.reDraw = function () {
+    var ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.createGrid();
+    this.reDrawNum();
+};
+
+p.reDrawNum = function () {
+    for (var i = 0; i < this.numNodes.length; i++) {
+        var x = this.numNodes[i].x;
+        var y = this.numNodes[i].y;
+        var num = this.numNodes[i].num;
+        this.createBg(x, y);
+        this.createNum(x, y, num);
+    }
+};
+
+p.down = function () {
     for (var x = 0; x < 4; x++) {
-        for (var y = 0; y < 4; y++) {
-            var num = this.getNum(x, y);
-            for (var z = y + 1; z < 4; z++) {
-                var num1 = this.getNum(x, z);
-                if (num && num1 && num.num === num1.num) {
-
+        for (var y = 3; y >= 0; y--) {
+            var title = this.getPos(x, y);
+            if (title && y < 3) {
+                for (var z = y + 1; z < 4; z++) {
+                    var title1 = this.getPos(x, z);
+                    if (title1) {
+                        if (title.num == title1.num) {
+                            title1.num = title1.num * 2;
+                            this.numNodes.splice(this.numNodes.indexOf(title), 1);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        title.y = title.y + 1;
+                    }
                 }
             }
         }
     }
 };
 
-p.move = function () {
-	for (var x = 0; x < 4; x++) {
-		for (var y = 3; y >= 0; y--) {
-			if (this.getPos(x, y) && y < 3) {
-				for (var z = y + 1; z < 4; z++) {
-					if (this.getPos(x, z)) {
+p.up = function () {
+    for (var x = 0; x < 4; x++) {
+        for (var y = 0; y < 4; y++) {
+            var title = this.getPos(x, y);
+            if (title && y > 0) {
+                for (var z = y - 1; z >= 0; z--) {
+                    var title1 = this.getPos(x, z);
+                    if (title1) {
+                        if (title.num == title1.num) {
+                            title1.num = title1.num * 2;
+                            this.numNodes.splice(this.numNodes.indexOf(title), 1);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        title.y = title.y - 1;
+                    }
+                }
+            }
+        }
+    }
+};
 
-					}
-				}
-			}
-		}
-	}
+p.left = function () {
+    for (var y = 0; y < 4; y++) {
+        for (var x = 0; x < 4; x++) {
+            var title = this.getPos(x, y);
+            if (title && x > 0) {
+                for (var z = x - 1; z >= 0; z--) {
+                    var title1 = this.getPos(z, y);
+                    if (title1) {
+                        if (title.num == title1.num) {
+                            title1.num = title1.num * 2;
+                            this.numNodes.splice(this.numNodes.indexOf(title), 1);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        title.x = title.x - 1;
+                    }
+                }
+            }
+        }
+    }
+};
+
+p.right = function () {
+    for (var y = 0; y < 4; y++) {
+        for (var x = 3; x >= 0; x--) {
+            var title = this.getPos(x, y);
+            if (title && x < 3) {
+                for (var z = x + 1; z < 4; z++) {
+                    var title1 = this.getPos(z, y);
+                    if (title1) {
+                        if (title.num == title1.num) {
+                            title1.num = title1.num * 2;
+                            this.numNodes.splice(this.numNodes.indexOf(title), 1);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        title.x = title.x + 1;
+                    }
+                }
+            }
+        }
+    }
 };
 
 p.getPos = function (x, y) {
-	for (var i = 0; i < this.numNodes.length; i++) {
-		var posX = this.numNodes[i].x;
-		var posY = this.numNodes[i].y;
-		if (posX === x && posY === y) {
-			return this.numNodes[i];
-		}
-	}
-	return false;
+    for (var i = 0; i < this.numNodes.length; i++) {
+        var posX = this.numNodes[i].x;
+        var posY = this.numNodes[i].y;
+        if (posX === x && posY === y) {
+            return this.numNodes[i];
+        }
+    }
+    return false;
 };
 
 p.getNum = function (x, y) {
