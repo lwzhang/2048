@@ -107,17 +107,17 @@ p.go = function () {
     }
 };
 
-p.getFarthestPos = function (x) {
-    for (var i = 0; i < 4; i++) {
-        for (var j = 3; j >= 0; j--) {
-            if (i == x) {
-                if (this.getNum(i, j)) {
-                    return this.getNum(i, j).y;
-                }
-            }
-        }
-    }
-}
+//p.getFarthestPos = function (x) {
+    //for (var i = 0; i < 4; i++) {
+        // for (var j = 3; j >= 0; j--) {
+            // if (i == x) {
+                // if (this.getNum(i, j)) {
+                    // return this.getNum(i, j).y;
+                // }
+            // }
+        // }
+    // }
+// }
 
 p.plusSameNum = function () {
     for (var x = 0; x < 4; x++) {
@@ -131,6 +131,10 @@ p.plusSameNum = function () {
             }
         }
     }
+};
+
+p.move = function () {
+    
 };
 
 p.getNum = function (x, y) {
