@@ -6,6 +6,7 @@ var Game = function (canvas) {
     this.radius = this.width / 8;
 
     this.numNodes = [];
+    this.flag = false;
 };
 
 var p = Game.prototype;
@@ -102,34 +103,49 @@ p.go = function () {
             case 37:
                 that.left();
                 that.reDraw();
-                that.addNum();
+                if (that.flag) {
+                    that.addNum();
+                    that.flag = false;
+                }
                 break;
             case 38:
                 that.up();
                 that.reDraw();
-                that.addNum();
+                if (that.flag) {
+                    that.addNum();
+                    that.flag = false;
+                }
                 break;
             case 39:
                 that.right();
                 that.reDraw();
-                that.addNum();
+                if (that.flag) {
+                    that.addNum();
+                    that.flag = false;
+                }
                 break;
             case 40:
                 that.down();
                 that.reDraw();
-                that.addNum();
+                if (that.flag) {
+                    that.addNum();
+                    that.flag = false;
+                }
                 break;
         }
     }
 };
 
 p.addNum = function () {
-    var obj = this.getAvailablePos();
-    var x = obj.x, y = obj.y;
-    var num = this.randomNum();
-    this.numNodes.push({x: x, y: y, num: num});
-    this.createBg(x, y);
-    this.createNum(x, y, num);
+    var that = this;
+    setTimeout(function () {
+        var obj = that.getAvailablePos();
+        var x = obj.x, y = obj.y;
+        var num = that.randomNum();
+        that.numNodes.push({x: x, y: y, num: num});
+        that.createBg(x, y);
+        that.createNum(x, y, num);
+    }, 80);
 };
 
 p.reDraw = function () {
@@ -164,6 +180,7 @@ p.down = function () {
                             break;
                         }
                     } else {
+                        this.flag = true;
                         title.y = title.y + 1;
                     }
                 }
@@ -187,6 +204,7 @@ p.up = function () {
                             break;
                         }
                     } else {
+                        this.flag = true;
                         title.y = title.y - 1;
                     }
                 }
@@ -210,6 +228,7 @@ p.left = function () {
                             break;
                         }
                     } else {
+                        this.flag = true;
                         title.x = title.x - 1;
                     }
                 }
@@ -233,6 +252,7 @@ p.right = function () {
                             break;
                         }
                     } else {
+                        this.flag = true;
                         title.x = title.x + 1;
                     }
                 }
