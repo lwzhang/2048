@@ -13,10 +13,11 @@ var p = Game.prototype;
 
 p.init = function () {
     this.createGrid();
-    this.createCircle();
+    this.initNum();
     this.go();
 };
 
+//画格子
 p.createGrid = function () {
     var ctx = this.ctx;
     var radius = this.radius;
@@ -25,28 +26,35 @@ p.createGrid = function () {
         x = (i * 2 + 1) * radius;
         for (var j = 0; j < 4; j++) {
             y = (j * 2 + 1) * radius;
-            ctx.lineWidth = 5;
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "#b8af9e";
+            ctx.arc(x, y, radius - 5, 0, 2 * Math.PI, false);
             ctx.stroke();
             ctx.closePath();
         }
     }
 };
 
-p.createCircle = function () {
+// 初始化两个数字
+p.initNum = function () {
     for (var i = 0; i < 2; i++) {
-        var obj = this.getAvailablePos();
-        var x = obj.x, y = obj.y;
-        var num = this.randomNum();
-        this.numNodes.push({x: x, y: y, num: num});
-        this.createBg(x, y);
-        this.createNum(x, y, num);
+        this.drawNum();
     }
+};
+
+p.drawNum = function () {
+    var obj = this.getAvailablePos();
+    var x = obj.x, y = obj.y;
+    var num = this.randomNum();
+    this.numNodes.push({x: x, y: y, num: num});
+    this.createNumBg(x, y);
+    this.createNum(x, y, num);
 };
 
 p.getAvailablePos = function () {
     var flag = true;
+    // 循环直到找到可用位置
     while (flag) {
         var x = parseInt(4 * Math.random());
         var y = parseInt(4 * Math.random());
@@ -58,16 +66,18 @@ p.getAvailablePos = function () {
 };
 
 p.randomNum = function () {
+    // 2出现的概率大于4
     return Math.random() > 0.9 ? 4 : 2;
 };
 
-p.createBg = function (x, y) {
+//数字的背景颜色
+p.createNumBg = function (x, y) {
     var ctx = this.ctx;
     x = (x * 2 + 1) * this.radius;
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
     ctx.fillStyle = "red";
-    ctx.arc(x, y, this.radius - 2, 0, 2 * Math.PI);
+    ctx.arc(x, y, this.radius - 10, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
 };
@@ -78,13 +88,14 @@ p.createNum = function (x, y, num) {
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
     ctx.fillStyle = "white";
-    ctx.font = "20px Georgia";
+    ctx.font = "40px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = 'middle';
     ctx.fillText(String(num), x, y);
     ctx.closePath();
 };
 
+//比较两个位置是否重合
 p.compare = function (x, y) {
     for (var i = 0; i < this.numNodes.length; i += 1) {
         if (this.numNodes[i].x === x && this.numNodes[i].y === y) {
@@ -104,7 +115,7 @@ p.go = function () {
                 that.left();
                 that.reDraw();
                 if (that.flag) {
-                    that.addNum();
+                    that.addNewNum();
                     that.flag = false;
                 }
                 break;
@@ -112,7 +123,7 @@ p.go = function () {
                 that.up();
                 that.reDraw();
                 if (that.flag) {
-                    that.addNum();
+                    that.addNewNum();
                     that.flag = false;
                 }
                 break;
@@ -120,7 +131,7 @@ p.go = function () {
                 that.right();
                 that.reDraw();
                 if (that.flag) {
-                    that.addNum();
+                    that.addNewNum();
                     that.flag = false;
                 }
                 break;
@@ -128,7 +139,7 @@ p.go = function () {
                 that.down();
                 that.reDraw();
                 if (that.flag) {
-                    that.addNum();
+                    that.addNewNum();
                     that.flag = false;
                 }
                 break;
@@ -136,18 +147,15 @@ p.go = function () {
     }
 };
 
-p.addNum = function () {
+//增加新数字
+p.addNewNum = function () {
     var that = this;
     setTimeout(function () {
-        var obj = that.getAvailablePos();
-        var x = obj.x, y = obj.y;
-        var num = that.randomNum();
-        that.numNodes.push({x: x, y: y, num: num});
-        that.createBg(x, y);
-        that.createNum(x, y, num);
+        that.drawNum();
     }, 80);
 };
 
+//重绘
 p.reDraw = function () {
     var ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -160,7 +168,7 @@ p.reDrawNum = function () {
         var x = this.numNodes[i].x;
         var y = this.numNodes[i].y;
         var num = this.numNodes[i].num;
-        this.createBg(x, y);
+        this.createNumBg(x, y);
         this.createNum(x, y, num);
     }
 };
