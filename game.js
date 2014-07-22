@@ -48,7 +48,7 @@ p.drawNum = function () {
     var x = obj.x, y = obj.y;
     var num = this.randomNum();
     this.numNodes.push({x: x, y: y, num: num});
-    this.createNumBg(x, y);
+    this.createNumBg(x, y, num);
     this.createNum(x, y, num);
 };
 
@@ -71,15 +71,19 @@ p.randomNum = function () {
 };
 
 //数字的背景颜色
-p.createNumBg = function (x, y) {
+p.createNumBg = function (x, y, num) {
     var ctx = this.ctx;
     x = (x * 2 + 1) * this.radius;
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
-    ctx.fillStyle = "red";
+    ctx.fillStyle = this.getColor(num);
     ctx.arc(x, y, this.radius - 10, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
+};
+
+p.getColor = function (num) {
+    return "rgb(" + 255 + ", " + 0 + ", " + 0 + ")";
 };
 
 p.createNum = function (x, y, num) {
@@ -165,10 +169,12 @@ p.reDraw = function () {
 
 p.reDrawNum = function () {
     for (var i = 0; i < this.numNodes.length; i++) {
-        var x = this.numNodes[i].x;
-        var y = this.numNodes[i].y;
-        var num = this.numNodes[i].num;
-        this.createNumBg(x, y);
+        var numNode = this.numNodes[i];
+        var x = numNode.x;
+        var y = numNode.y;
+        var num = numNode.num;
+        numNode.isMerge && (numNode.isMerge = false);
+        this.createNumBg(x, y, num);
         this.createNum(x, y, num);
     }
 };
@@ -181,8 +187,10 @@ p.down = function () {
                 for (var z = y + 1; z < 4; z++) {
                     var title1 = this.getPos(x, z);
                     if (title1) {
-                        if (title.num == title1.num) {
+                        if (title.num == title1.num && !title1.isMerge) {
                             title1.num = title1.num * 2;
+                            title1.isMerge = true;
+                            this.flag = true;
                             this.numNodes.splice(this.numNodes.indexOf(title), 1);
                         } else {
                             break;
@@ -205,8 +213,11 @@ p.up = function () {
                 for (var z = y - 1; z >= 0; z--) {
                     var title1 = this.getPos(x, z);
                     if (title1) {
-                        if (title.num == title1.num) {
+                        if (title.num == title1.num && !title1.isMerge) {
                             title1.num = title1.num * 2;
+                            //已经合并过，避免再次合并
+                            title1.isMerge = true;
+                            this.flag = true;
                             this.numNodes.splice(this.numNodes.indexOf(title), 1);
                         } else {
                             break;
@@ -229,8 +240,10 @@ p.left = function () {
                 for (var z = x - 1; z >= 0; z--) {
                     var title1 = this.getPos(z, y);
                     if (title1) {
-                        if (title.num == title1.num) {
+                        if (title.num == title1.num && !title1.isMerge) {
                             title1.num = title1.num * 2;
+                            title1.isMerge = true;
+                            this.flag = true;
                             this.numNodes.splice(this.numNodes.indexOf(title), 1);
                         } else {
                             break;
@@ -253,8 +266,10 @@ p.right = function () {
                 for (var z = x + 1; z < 4; z++) {
                     var title1 = this.getPos(z, y);
                     if (title1) {
-                        if (title.num == title1.num) {
+                        if (title.num == title1.num && !title1.isMerge) {
                             title1.num = title1.num * 2;
+                            title1.isMerge = true;
+                            this.flag = true;
                             this.numNodes.splice(this.numNodes.indexOf(title), 1);
                         } else {
                             break;
