@@ -252,16 +252,5 @@ p.getPos = function (x, y) {
     return false;
 };
 
-p.getNum = function (x, y) {
-    for (var i = 0; i < this.numNodes.length; i++) {
-        var posX = this.numNodes[i].x;
-        var posY = this.numNodes[i].y;
-        if (posX === x && posY === y) {
-            return this.numNodes[i];
-        }
-    }
-    return false;
-};
-
 var game = new Game(document.querySelector("canvas"));
 game.init();
