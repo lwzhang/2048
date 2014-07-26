@@ -17,7 +17,7 @@ p.init = function () {
     this.go();
 };
 
-//»­¸ñ×Ó
+//ç”»æ ¼å­
 p.createGrid = function () {
     var ctx = this.ctx;
     var radius = this.radius;
@@ -36,7 +36,7 @@ p.createGrid = function () {
     }
 };
 
-// ³õÊ¼»¯Á½¸öÊı×Ö
+// åˆå§‹åŒ–ä¸¤ä¸ªæ•°å­—
 p.initNum = function () {
     for (var i = 0; i < 2; i++) {
         this.drawNum();
@@ -48,13 +48,13 @@ p.drawNum = function () {
     var x = obj.x, y = obj.y;
     var num = this.randomNum();
     this.numNodes.push({x: x, y: y, num: num});
-    this.createNumBg(x, y, num);
+    this.createNumBg(x, y, num, 10);
     this.createNum(x, y, num);
 };
 
 p.getAvailablePos = function () {
     var flag = true;
-    // Ñ­»·Ö±µ½ÕÒµ½¿ÉÓÃÎ»ÖÃ
+    // å¾ªç¯ç›´åˆ°æ‰¾åˆ°å¯ç”¨ä½ç½®
     while (flag) {
         var x = parseInt(4 * Math.random());
         var y = parseInt(4 * Math.random());
@@ -66,18 +66,18 @@ p.getAvailablePos = function () {
 };
 
 p.randomNum = function () {
-    // 2³öÏÖµÄ¸ÅÂÊ´óÓÚ4
+    // 2å‡ºç°çš„æ¦‚ç‡å¤§äº4
     return Math.random() > 0.9 ? 4 : 2;
 };
 
-//Êı×ÖµÄ±³¾°ÑÕÉ«
-p.createNumBg = function (x, y, num) {
+//æ•°å­—çš„èƒŒæ™¯é¢œè‰²
+p.createNumBg = function (x, y, num, diff) {
     var ctx = this.ctx;
     x = (x * 2 + 1) * this.radius;
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
     ctx.fillStyle = this.getColor(num);
-    ctx.arc(x, y, this.radius - 10, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, this.radius - diff, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
 };
@@ -99,7 +99,7 @@ p.createNum = function (x, y, num) {
     ctx.closePath();
 };
 
-//±È½ÏÁ½¸öÎ»ÖÃÊÇ·ñÖØºÏ
+//æ¯”è¾ƒä¸¤ä¸ªä½ç½®æ˜¯å¦é‡åˆ
 p.compare = function (x, y) {
     for (var i = 0; i < this.numNodes.length; i += 1) {
         if (this.numNodes[i].x === x && this.numNodes[i].y === y) {
@@ -118,53 +118,50 @@ p.go = function () {
             case 37:
                 that.left();
                 that.reDraw();
-                if (that.flag) {
-                    that.addNewNum();
-                    that.flag = false;
-                }
+                that.addNewNum();
                 break;
             case 38:
                 that.up();
                 that.reDraw();
-                if (that.flag) {
-                    that.addNewNum();
-                    that.flag = false;
-                }
+                that.addNewNum();
                 break;
             case 39:
                 that.right();
                 that.reDraw();
-                if (that.flag) {
-                    that.addNewNum();
-                    that.flag = false;
-                }
+                that.addNewNum();
                 break;
             case 40:
                 that.down();
                 that.reDraw();
-                if (that.flag) {
-                    that.addNewNum();
-                    that.flag = false;
-                }
+                that.addNewNum();
                 break;
         }
     }
 };
 
-//Ôö¼ÓĞÂÊı×Ö
+//å¢åŠ æ•°å­—
 p.addNewNum = function () {
     var that = this;
-    setTimeout(function () {
-        that.drawNum();
-    }, 80);
+    if (this.flag) {
+        setTimeout(function () {
+            that.drawNum();
+        }, 80);
+        this.flag = false;
+    }
 };
 
-//ÖØ»æ
+//é‡ç»˜
 p.reDraw = function () {
+    var that = this;
     var ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.createGrid();
     this.reDrawNum();
+    setTimeout(function () {
+        ctx.clearRect(0, 0, that.canvas.width, that.canvas.height);
+        that.createGrid();
+        that.reDrawNum();
+    }, 100)
 };
 
 p.reDrawNum = function () {
@@ -173,8 +170,14 @@ p.reDrawNum = function () {
         var x = numNode.x;
         var y = numNode.y;
         var num = numNode.num;
-        numNode.isMerge && (numNode.isMerge = false);
-        this.createNumBg(x, y, num);
+//        numNode.isMerge && (numNode.isMerge = false);
+        if (numNode.isMerge) {
+            this.createNumBg(x, y, num, 0);
+            numNode.isMerge = false
+        } else {
+            this.createNumBg(x, y, num, 10);
+        }
+
         this.createNum(x, y, num);
     }
 };
@@ -215,7 +218,7 @@ p.up = function () {
                     if (title1) {
                         if (title.num == title1.num && !title1.isMerge) {
                             title1.num = title1.num * 2;
-                            //ÒÑ¾­ºÏ²¢¹ı£¬±ÜÃâÔÙ´ÎºÏ²¢
+                            //å·²ç»åˆå¹¶è¿‡çš„ï¼Œé¿å…å†æ¬¡åˆå¹¶
                             title1.isMerge = true;
                             this.flag = true;
                             this.numNodes.splice(this.numNodes.indexOf(title), 1);
