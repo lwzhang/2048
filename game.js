@@ -76,14 +76,52 @@ p.createNumBg = function (x, y, num, diff) {
     x = (x * 2 + 1) * this.radius;
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
-    ctx.fillStyle = this.getColor(num);
+    ctx.fillStyle = this.getBgColor(num);
     ctx.arc(x, y, this.radius - diff, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.closePath();
 };
 
-p.getColor = function (num) {
-    return "rgb(" + 255 + ", " + 0 + ", " + 0 + ")";
+p.getBgColor = function (num) {
+    var bgColor;
+    switch (num) {
+        case 2:
+            bgColor = "#eee4da";
+            break;
+        case 4:
+            bgColor = "#ede0c8";
+            break;
+        case 8:
+            bgColor = "#f2b179";
+            break;
+        case 16:
+            bgColor = "#f59563";
+            break;
+        case 32:
+            bgColor = "#f67c5f";
+            break;
+        case 64:
+            bgColor = "#f65e3b";
+            break;
+        case 128:
+            bgColor = "#edcf72";
+            break;
+        case 256:
+            bgColor = "#edcc61";
+            break;
+        case 512:
+            bgColor = "#edc850";
+            break;
+        case 1024:
+            bgColor = "#edc53f";
+            break;
+        case 2048:
+            bgColor = "#edc22e";
+            break;
+        default:
+            bgColor = "#eee4da";
+    }
+    return bgColor;
 };
 
 p.createNum = function (x, y, num) {
@@ -91,7 +129,7 @@ p.createNum = function (x, y, num) {
     x = (x * 2 + 1) * this.radius;
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
-    ctx.fillStyle = "white";
+    ctx.fillStyle = (num == 2 || num == 4) ? "#776e65" : "#f9f6f2";
     ctx.font = "40px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = 'middle';
@@ -114,6 +152,9 @@ p.go = function () {
     document.onkeydown = function (e) {
         e = e || window.event;
         var code = e.keyCode || e.charCode;
+        if (that.checkGameOver()) {
+            alert("game over");
+        }
         switch (code) {
             case 37:
                 that.left();
@@ -173,7 +214,7 @@ p.reDrawNum = function () {
 //        numNode.isMerge && (numNode.isMerge = false);
         if (numNode.isMerge) {
             this.createNumBg(x, y, num, 0);
-            numNode.isMerge = false
+            numNode.isMerge = false;
         } else {
             this.createNumBg(x, y, num, 10);
         }
@@ -298,5 +339,22 @@ p.getPos = function (x, y) {
     return false;
 };
 
+p.checkGameOver = function () {
+    if (this.numNodes.length < 16) return false;
+    for (var i = 0; i < 4; i++) {
+        for (var j = i; j < 4; j++) {
+            var title = this.getPos(i, j);
+            var other = this.getPos(i, j + 1);
+
+            var title1 = this.getPos(j, i);
+            var other1 = this.getPos(j + 1, i);
+            if (title.num == other.num || title1.num == other1.num) {
+                return false;
+            }
+        }
+    }
+    return true;
+
+};
 var game = new Game(document.querySelector("canvas"));
 game.init();
