@@ -111,7 +111,7 @@ p.compare = function (x, y) {
 
 p.go = function () {
     var that = this;
-    document.onkeypress = function (e) {
+    document.onkeydown = function (e) {
         e = e || window.event;
         var code = e.keyCode || e.charCode;
         switch (code) {
