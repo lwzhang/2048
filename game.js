@@ -342,7 +342,7 @@ p.getPos = function (x, y) {
 p.checkGameOver = function () {
     if (this.numNodes.length < 16) return false;
     for (var i = 0; i < 4; i++) {
-        for (var j = i; j < 4; j++) {
+        for (var j = 0; j < 3; j++) {
             var title = this.getPos(i, j);
             var other = this.getPos(i, j + 1);
 
