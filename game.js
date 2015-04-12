@@ -199,7 +199,7 @@ p.mobileEvent = function () {
             alert("game over");
         }
 
-        if (Math.abs(deltaX) > 0.3 * window.innerWidth && Math.abs(deltaY) || 0.3 * window.innerWidth) {
+        if (Math.abs(deltaX) > 0.3 * window.innerWidth || Math.abs(deltaY) > 0.3 * window.innerWidth) {
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
                 if (deltaX > 0) {
                     that.right();
