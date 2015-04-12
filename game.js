@@ -1,8 +1,8 @@
 var Game = function (canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
-    this.width = canvas.width = window.innerWidth * 0.8;
-    this.height = canvas.height = window.innerWidth * 0.8;
+    this.width = canvas.width = window.innerWidth * 0.9;
+    this.height = canvas.height = window.innerWidth * 0.9;
     this.radius = this.width / 8;
 
     this.numNodes = [];
