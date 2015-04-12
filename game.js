@@ -1,8 +1,8 @@
 var Game = function (canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
-    this.width = canvas.width = window.innerWidth * 0.9;
-    this.height = canvas.height = window.innerWidth * 0.9;
+    this.width = canvas.width = window.innerWidth > 500 ? 500 : window.innerWidth * 0.9;
+    this.height = canvas.height = window.innerWidth > 500 ? 500 : window.innerWidth * 0.9;
     this.radius = this.width / 8;
 
     this.numNodes = [];
@@ -131,7 +131,7 @@ p.createNum = function (x, y, num) {
     y = (y * 2 + 1) * this.radius;
     ctx.beginPath();
     ctx.fillStyle = (num == 2 || num == 4) ? "#776e65" : "#f9f6f2";
-    ctx.font = "40px Georgia";
+    ctx.font = "30px Georgia";
     ctx.textAlign = "center";
     ctx.textBaseline = 'middle';
     ctx.fillText(String(num), x, y);
