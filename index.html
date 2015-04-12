@@ -3,9 +3,26 @@
 <head>
     <title>2048</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
 </head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    #canvas {
+        background-color: #ccc0b2;
+        border-radius: 10px;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
 <body>
-    <canvas id="canvas" width="500" height="500" style="background-color: #ccc0b2; border-radius: 10px"></canvas>
+    <canvas id="canvas"></canvas>
     <script src="game.js"></script>
 </body>
 </html>

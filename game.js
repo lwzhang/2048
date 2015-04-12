@@ -1,8 +1,8 @@
 var Game = function (canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.width = canvas.width = window.innerWidth * 0.8;
+    this.height = canvas.height = window.innerWidth * 0.8;
     this.radius = this.width / 8;
 
     this.numNodes = [];
@@ -15,6 +15,7 @@ p.init = function () {
     this.createGrid();
     this.initNum();
     this.go();
+    this.mobileEvent();
 };
 
 //画格子
@@ -27,9 +28,9 @@ p.createGrid = function () {
         for (var j = 0; j < 4; j++) {
             y = (j * 2 + 1) * radius;
             ctx.beginPath();
-            ctx.lineWidth = 10;
+            ctx.lineWidth = 6;
             ctx.strokeStyle = "#b8af9e";
-            ctx.arc(x, y, radius - 5, 0, 2 * Math.PI, false);
+            ctx.arc(x, y, radius - 3, 0, 2 * Math.PI, false);
             ctx.stroke();
             ctx.closePath();
         }
@@ -48,7 +49,7 @@ p.drawNum = function () {
     var x = obj.x, y = obj.y;
     var num = this.randomNum();
     this.numNodes.push({x: x, y: y, num: num});
-    this.createNumBg(x, y, num, 10);
+    this.createNumBg(x, y, num, 6);
     this.createNum(x, y, num);
 };
 
@@ -180,6 +181,50 @@ p.go = function () {
     }
 };
 
+p.mobileEvent = function () {
+    var that = this;
+    document.addEventListener("touchstart", function (e) {
+        that.startX = e.touches[0].pageX;
+        that.startY = e.touches[0].pageY;
+    });
+
+    document.addEventListener("touchend", function (e) {
+        that.endX = e.changedTouches[0].pageX;
+        that.endY = e.changedTouches[0].pageY;
+
+        var deltaX = that.endX - that.startX;
+        var deltaY = that.endY - that.startY;
+
+        if (that.checkGameOver()) {
+            alert("game over");
+        }
+
+        if (Math.abs(deltaX) > 0.3 * window.innerWidth && Math.abs(deltaY) || 0.3 * window.innerWidth) {
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    that.right();
+                    that.reDraw();
+                    that.addNewNum();
+                } else {
+                    that.left();
+                    that.reDraw();
+                    that.addNewNum();
+                }
+            } else {
+                if (deltaY > 0) {
+                    that.down();
+                    that.reDraw();
+                    that.addNewNum();
+                } else {
+                    that.up();
+                    that.reDraw();
+                    that.addNewNum();
+                }
+            }
+        }
+    });
+};
+
 //增加数字
 p.addNewNum = function () {
     var that = this;
@@ -216,7 +261,7 @@ p.reDrawNum = function () {
             this.createNumBg(x, y, num, 0);
             numNode.isMerge = false;
         } else {
-            this.createNumBg(x, y, num, 10);
+            this.createNumBg(x, y, num, 6);
         }
 
         this.createNum(x, y, num);
