@@ -184,9 +184,14 @@ p.go = function () {
 p.mobileEvent = function () {
     var that = this;
     document.addEventListener("touchstart", function (e) {
+        e.preventDefault();
         that.startX = e.touches[0].pageX;
         that.startY = e.touches[0].pageY;
     });
+    
+    document.addEventListener("touchmove", function (e) {
+        e.preventDefault();
+    })
 
     document.addEventListener("touchend", function (e) {
         that.endX = e.changedTouches[0].pageX;
